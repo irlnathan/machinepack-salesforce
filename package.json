@@ -1,0 +1,32 @@
+{
+  "name": "machinepack-salesforce",
+  "version": "0.1.0",
+  "description": "Communicate with the Salesforce API to get profiles, accounts, contacts, etc.",
+  "scripts": {
+    "test": "node ./node_modules/test-machinepack-mocha/bin/testmachinepack-mocha.js"
+  },
+  "keywords": [
+    "Salesforce",
+    "machines",
+    "machinepack"
+  ],
+  "author": "Irl Nathan",
+  "license": "MIT",
+  "dependencies": {
+    "machine": "^3.0.0",
+    "salesforce-oauth2": "^0.1.8",
+    "request": "^2.53.0"
+  },
+  "devDependencies": {
+    "test-machinepack-mocha": "^0.2.2"
+  },
+  "machinepack": {
+    "friendlyName": "Salesforce",
+    "machineDir": "machines/",
+    "machines": [
+      "get-login-url",
+      "get-access-token",
+      "get-user-by-access-token"
+    ]
+  }
+}
