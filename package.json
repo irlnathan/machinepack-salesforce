@@ -17,6 +17,10 @@
     "salesforce-oauth2": "^0.1.8",
     "request": "^2.53.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/irlnathan/machinepack-salesforce.git"
+  },
   "devDependencies": {
     "test-machinepack-mocha": "^0.2.2"
   },

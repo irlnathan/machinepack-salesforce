@@ -82,8 +82,7 @@ module.exports = {
         locale: 'en_US',
         utcOffset: -28800000,
         last_modified_date: '2015-03-12T22:02:09.000+0000',
-        is_app_installed: true
-      } {
+        is_app_installed: true,
         id: 'https://login.salesforce.com/id/3234234029ZXzasdfasdf00C',
         asserted_user: true,
         user_id: '3234234029ZXzasdfasdf00C',
@@ -143,8 +142,6 @@ module.exports = {
 
     var request = require('request');
 
-    console.log("made it here.");
-
     var options = {
       url: inputs.id,
       headers: {
@@ -152,15 +149,18 @@ module.exports = {
       }
     };
 
-    // console.log("options: ", options);
-
     request(options, function(error, res, body) {
 
-      body = JSON.parse(body);
+      try{
 
-      console.log(body);
+        body = JSON.parse(body);
 
-      return exits.success(body);
+        return exits.success(body);
+      } catch(e) {
+
+          return exits.error('Error when parsing body.')
+
+      }
 
     })
 
