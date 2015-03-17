@@ -5,7 +5,6 @@ module.exports = {
   description: 'Get the URL on salesforce.com that a user should visit to allow/deny the specified Salesforce Developer app (i.e. your app).',
   extendedDescription: 'This is the URL where you typically redirect a user in order for them to grant access to your Facebook app.',
 
-
   inputs: {
     consumerKey: {
       example: 'adf90878aKsloewurSDFIUFsdisoufsodfu',
