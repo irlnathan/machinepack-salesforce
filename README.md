@@ -8,7 +8,7 @@
 Communicate with the Salesforce API to get profiles, accounts, contacts, etc.
 
 
-## Installation &nbsp; [![NPM version](https://badge.fury.io/js/machinepack-salesforce.svg)](http://badge.fury.io/js/machinepack-salesforce) [![Build Status](https://travis-ci.org/mikermcneil/machinepack-salesforce.png?branch=master)](https://travis-ci.org/mikermcneil/machinepack-salesforce)
+## Installation &nbsp; [![NPM version](https://badge.fury.io/js/machinepack-salesforce.svg)](http://badge.fury.io/js/machinepack-salesforce) [![Build Status](https://travis-ci.org/irlnathan/machinepack-salesforce.png?branch=master)](https://travis-ci.org/irlnathan/machinepack-salesforce)
 
 ```sh
 $ npm install machinepack-salesforce
