@@ -33,7 +33,9 @@
       "get-login-url",
       "get-access-token",
       "get-user-by-access-token",
-      "get-object-by-id"
+      "get-object-by-id",
+      "update-object-by-id",
+      "describe-object-type"
     ]
   }
 }

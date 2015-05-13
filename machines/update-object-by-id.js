@@ -1,7 +1,7 @@
 module.exports = {
 
-  friendlyName: 'Get object by Id',
-  description: 'Get a salseforce object by Id. Returns the entire object.',
+  friendlyName: 'Update object by Id',
+  description: 'Update a salseforce object given Id and new values.',
   extendedDescription: 'Requires authentication with username, password, and secret token.',
 
   inputs: {
@@ -25,9 +25,11 @@ module.exports = {
       description: 'Salseforce object type.',
       required: true
     },
-    objectId: {
-      example: '12345',
-      description: 'Salesforce object Id.',
+    objectData: {
+      example: {
+        Id: '1234'
+      },
+      description: 'Object with updated properties. Must contain Id',
       required: true
     }
   },
@@ -48,24 +50,16 @@ module.exports = {
       description: 'Object not found for this Id.',
     },
 
+    objectIdMissing: {
+      description: 'Object Id must be provided as `objectId` or in `objectData` hash.'
+    },
+
+    requiredFieldMissing: {
+      description: 'Required field missing'
+    },
+
     success: {
-      description: {
-        attributes: {
-          type: 'Lead',
-          url: '/services/data/v33.0/sobjects/Lead/00Q5000000yrUgaAAA'
-        },
-        Id: '00Q5000000yrUgaAAA',
-        IsDeleted: false,
-        MasterRecordId: null,
-        LastName: 'Testerson',
-        FirstName: 'Test',
-        Salutation: null,
-        Name: 'Test Testerson',
-        Title: null,
-        Company: 'Test Company',
-        Street: '1 Test Drive',
-        City: 'Testing'
-      }
+      description: 'success!'
     }
 
   },
@@ -78,6 +72,10 @@ module.exports = {
     var email = inputs.email;
     var pass = inputs.password + inputs.token;
 
+    if(!inputs.objectData.Id) {
+      return exists.objectIdMissing();
+    }
+
     conn.login(email, pass, function(connErr, result) {
       if (connErr && connErr.toString().indexOf('INVALID_LOGIN') !== -1) {
         return exits.invalidLogin(connErr);
@@ -86,9 +84,11 @@ module.exports = {
       }
       conn
         .sobject(inputs.objectType)
-        .retrieve(inputs.objectId, function(objErr, theObject) {
+        .update(inputs.objectData, function(objErr, theObject) {
           if (objErr && objErr.toString().indexOf('NOT_FOUND') !== -1) {
             return exits.notFound(objErr);
+          } else if (objErr && objErr.toString().indexOf('REQUIRED_FIELD_MISSING') !== -1) {
+            return exits.requiredFieldMissing(objErr);
           } else if (objErr) {
             return exits.error(objErr);
           }
