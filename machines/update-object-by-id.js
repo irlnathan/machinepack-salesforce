@@ -26,9 +26,7 @@ module.exports = {
       required: true
     },
     objectData: {
-      example: {
-        Id: '1234'
-      },
+      example: {},
       description: 'Object with updated properties. Must contain Id',
       required: true
     }
