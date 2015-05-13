@@ -34,6 +34,7 @@
       "get-access-token",
       "get-user-by-access-token",
       "get-object-by-id",
+      "create-object",
       "update-object-by-id",
       "describe-object-type"
     ]

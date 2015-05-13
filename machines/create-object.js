@@ -1,7 +1,7 @@
 module.exports = {
 
-  friendlyName: 'Update object by Id',
-  description: 'Update a salseforce object given Id and new values.',
+  friendlyName: 'Create new salesforce object',
+  description: 'Create a salseforce object given object properties. Returns new object Id',
   extendedDescription: 'Requires authentication with username, password, and secret token.',
 
   inputs: {
@@ -26,10 +26,8 @@ module.exports = {
       required: true
     },
     objectData: {
-      example: {
-        Id: '1234'
-      },
-      description: 'Object with updated properties. Must contain Id',
+      example: {},
+      description: 'Object with new properties. If Id is present it will be deleted.',
       required: true
     }
   },
@@ -46,20 +44,13 @@ module.exports = {
       description: 'Login was not successful',
     },
 
-    notFound: {
-      description: 'Object not found for this Id.',
-    },
-
-    objectIdMissing: {
-      description: 'Object Id must be provided as `objectId` or in `objectData` hash.'
-    },
-
     requiredFieldMissing: {
       description: 'Required field missing'
     },
 
     success: {
-      description: 'success!'
+      description: 'success!',
+      example: '00Q5000000yzUmOEAU'
     }
 
   },
@@ -72,27 +63,27 @@ module.exports = {
     var email = inputs.email;
     var pass = inputs.password + inputs.token;
 
-    if(!inputs.objectData.Id) {
-      return exits.objectIdMissing();
-    }
-
     conn.login(email, pass, function(connErr, result) {
       if (connErr && connErr.toString().indexOf('INVALID_LOGIN') !== -1) {
         return exits.invalidLogin(connErr);
       } else if (connErr) {
         return exits.error(connErr);
       }
+      if (inputs.objectType.Id) {
+        delete inputs.objectType.Id;
+      }
       conn
         .sobject(inputs.objectType)
-        .update(inputs.objectData, function(objErr, theObject) {
+        .create(inputs.objectData, function(objErr, theObject) {
           if (objErr && objErr.toString().indexOf('NOT_FOUND') !== -1) {
             return exits.notFound(objErr);
-          } else if (objErr && objErr.toString().indexOf('REQUIRED_FIELD_MISSING') !== -1) {
+          } else if (objErr && objErr.toString().indexOf(
+            'REQUIRED_FIELD_MISSING') !== -1) {
             return exits.requiredFieldMissing(objErr);
           } else if (objErr) {
             return exits.error(objErr);
           }
-          return exits.success(theObject);
+          return exits.success(theObject.id);
         });
 
     });
