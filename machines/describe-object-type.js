@@ -27,7 +27,8 @@ module.exports = {
     },
     includeValues: {
       example: {},
-      description: 'Salesforce returns a ton of properties. Optionally provide a hash of properties you want returned.',
+      description: 'Salesforce objects have many properties. Optionally provide a hash of properties you are interested in.',
+      extendedDescription: 'For example, return all field names with `{"fields":[{"name":true}]}`. Return all field names and all picker labels with values with `{"fields":[{"name":true, "picklistValues":[{"label":true,"value":true}]}]}`.',
       required: false
     }
   },
@@ -122,6 +123,24 @@ module.exports = {
     var email = inputs.email;
     var pass = inputs.password + inputs.token;
 
+    function returnCleanedValues(whichFields, data) {
+      if (_.isArray(data)) {
+        // if data is array
+        return _.map(data, function(singleData) {
+          return returnCleanedValues(whichFields, singleData);
+        });
+      } else {
+        // object, we want to map these fields
+        // for each field requested, get value from data
+        return _.mapValues(whichFields, function(value, key) {
+          if (_.isArray(data[key]) && _.isArray(value)) {
+            return returnCleanedValues(value[0], data[key]);
+          }
+          return data[key];
+        });
+      }
+    }
+
     conn.login(email, pass, function(connErr, result) {
       if (connErr && connErr.toString().indexOf('INVALID_LOGIN') !== -1) {
         return exits.invalidLogin(connErr);
@@ -137,19 +156,9 @@ module.exports = {
             return exits.error(objErr);
           }
           if (inputs.includeValues) {
-            function returnCleanedValues(whichFields, data) {
-              return _.map(data, function(field) {
-                return _.mapValues(whichFields, function(value, key) {
-                  if (_.isArray(field[key]) && _.isArray(value)) {
-                    return returnCleanedValues(value[0], field[key]);
-                  }
-                  return field[key];
-                });
-              });
-            }
             var cleaned = returnCleanedValues(
               inputs.includeValues,
-              theObjectDescription.fields
+              theObjectDescription
             );
             return exits.success(cleaned);
           } else {
