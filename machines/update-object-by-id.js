@@ -48,6 +48,10 @@ module.exports = {
       description: 'Object not found for this Id.',
     },
 
+    invalidField: {
+      description: 'Attempted to update Object properties which are not allowed to be updated.'
+    },
+
     objectIdMissing: {
       description: 'Object Id must be provided as `objectId` or in `objectData` hash.'
     },
@@ -66,11 +70,39 @@ module.exports = {
   fn: function(inputs, exits) {
 
     var jsforce = require('jsforce');
+    var _ = require('lodash');
     var conn = new jsforce.Connection();
     var email = inputs.email;
     var pass = inputs.password + inputs.token;
 
-    if(!inputs.objectData.Id) {
+    // @todo make this more configurable
+    var strip = ['LastModifiedDate',
+      'ConvertedOpportunityId',
+      'CreatedById',
+      'IsDeleted',
+      'SystemModstamp',
+      'PhotoUrl',
+      'LastReferencedDate',
+      'MasterRecordId',
+      'JigsawContactId',
+      'Address',
+      'CreatedDate',
+      'LastViewedDate',
+      'IsConverted',
+      'LastActivityDate',
+      'LastModifiedById',
+      'Name',
+      'ConvertedDate',
+      'ConvertedContactId',
+      'ConvertedAccountId'
+    ];
+
+    // remove non-allowed values
+    _.each(strip, function(value, key) {
+      delete inputs.objectData[value];
+    });
+
+    if (!inputs.objectData.Id) {
       return exits.objectIdMissing();
     }
 
@@ -85,7 +117,11 @@ module.exports = {
         .update(inputs.objectData, function(objErr, theObject) {
           if (objErr && objErr.toString().indexOf('NOT_FOUND') !== -1) {
             return exits.notFound(objErr);
-          } else if (objErr && objErr.toString().indexOf('REQUIRED_FIELD_MISSING') !== -1) {
+          } else if (objErr && objErr.toString().indexOf(
+            'INVALID_FIELD_FOR_INSERT_UPDATE') !== -1) {
+            return exits.invalidField(objErr);
+          } else if (objErr && objErr.toString().indexOf(
+            'REQUIRED_FIELD_MISSING') !== -1) {
             return exits.requiredFieldMissing(objErr);
           } else if (objErr) {
             return exits.error(objErr);
