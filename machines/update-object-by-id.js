@@ -5,6 +5,10 @@ module.exports = {
   extendedDescription: 'Requires authentication with username, password, and secret token.',
 
   inputs: {
+    url: {
+      example: 'https://cs2.salesforce.com/',
+      description: 'URL for connecting your salesforce instance, sandbox, etc.'
+    },
     email: {
       example: 'user@gmail.com',
       description: 'Email address used to login to your salseforce account.',
@@ -71,7 +75,11 @@ module.exports = {
 
     var jsforce = require('jsforce');
     var _ = require('lodash');
-    var conn = new jsforce.Connection();
+    var connString = {};
+    if (inputs.url) {
+      connString.loginUrl = inputs.url;
+    }
+    var conn = new jsforce.Connection(connString);
     var email = inputs.email;
     var pass = inputs.password + inputs.token;
 
